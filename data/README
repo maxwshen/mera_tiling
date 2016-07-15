@@ -1,0 +1,16 @@
+expdesign2
+  Started by Nisha. Targets ~10 genes in Mice
+  Contains selected files from /cluster/nishar/mm10_fasta/ES_TF_data/MERA_new_round/
+
+2016-06-30:
+  Ive's low-diversity for Myh9, Msh2. Replicate 2
+
+  Original File:
+  /cluster/shortreads/reads/grna_utrecht_miseq_063016/160622_M01102_0129_000000000-ANY5C/Data/Intensities/BaseCalls/NGEI011/SHE1204A1/SHE1204_S1_L001_R1_001.fastq
+
+  Replicate 1 (Currently not included)
+  /cluster/shortreads/reads/grna_utrecht_miseq_042516/Samples611_S1_L001_R1_001.fastq
+
+2016-07-06:
+  Rich's miseq runs on Brca2 and Hoxa1 that arrived June 6th
+  Two sequencing runs were combined with cat

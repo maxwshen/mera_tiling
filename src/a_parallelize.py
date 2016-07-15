@@ -4,16 +4,21 @@
 # We split up a directory into many subdirectories, then launch 
 # a script on each subdirectory
 
-import _config, _parallel_config
+import _config
 import sys, os, fnmatch, importlib, subprocess
-
 
 from mylib import util
 
 NAME = util.get_fn(__file__)
 
+P_SCRIPT = 'a_demultiplex'
+SPLITS = 8
+SPLIT_TYPE = 'line'
+REGEX_FILTER = '*fastq'
+LINES_DIVISOR = 4
+
 def split_folds(fold):
-  for i in range(_parallel_config.SPLITS):
+  for i in range(SPLITS):
     util.ensure_dir_exists(fold + 'split' + str(i))
   return
 
@@ -22,13 +27,13 @@ def split_by_lines(inp_dir):
   # Used for scripts that operate line-by-line on all files
 
   for fn in os.listdir(inp_dir):
-    if fnmatch.fnmatch(fn, _parallel_config.REGEX_FILTER):
+    if fnmatch.fnmatch(fn, REGEX_FILTER):
       nl = util.line_count(inp_dir + fn)
-      jump = nl / _parallel_config.SPLITS
-      jump = (jump / _parallel_config.LINES_DIVISOR) * _parallel_config.LINES_DIVISOR
+      jump = nl / SPLITS
+      jump = (jump / LINES_DIVISOR) * LINES_DIVISOR
 
-      for i in range(_parallel_config.SPLITS):
-        if i < _parallel_config.SPLITS - 1:
+      for i in range(SPLITS):
+        if i < SPLITS - 1:
           arg = str(jump *  i + 1) + ',' + \
           str(jump * (i + 1)) + 'p;' + \
           str(jump * (i + 1) + 1) + 'q'
@@ -51,10 +56,10 @@ def split_by_files(inp_dir):
 
 def start_threads(inp_dir, out_dir, script):
   # Main meat of this 
-  inps = [inp_dir + 'split' + str(s) + '/' for s in range(_parallel_config.SPLITS)]
-  outs = [out_dir + 'split' + str(s) + '/' for s in range(_parallel_config.SPLITS)]
-  logs = [out_dir + 'split' + str(s) + '/stdout.out' for s in range(_parallel_config.SPLITS)]
-  errs = [out_dir + 'split' + str(s) + '/stderr.out' for s in range(_parallel_config.SPLITS)]
+  inps = [inp_dir + 'split' + str(s) + '/' for s in range(SPLITS)]
+  outs = [out_dir + 'split' + str(s) + '/' for s in range(SPLITS)]
+  logs = [out_dir + 'split' + str(s) + '/stdout.out' for s in range(SPLITS)]
+  errs = [out_dir + 'split' + str(s) + '/stderr.out' for s in range(SPLITS)]
 
   outfs, errfs = [open(s, 'w') for s in logs], [open(s, 'w') for s in errs]
 
@@ -77,61 +82,84 @@ def start_threads(inp_dir, out_dir, script):
 def combine_outputs(out_dir):
   # Concatenates all split outputs together 
   # into the main output directory 
-  out_splits = [out_dir + 'split' + str(s) + '/' for s in range(_parallel_config.SPLITS)]
+  print '\tCombining...'
+  out_splits = [out_dir + 'split' + str(s) + '/' for s in range(SPLITS)]
 
-  fns = set()
-  for s in out_splits:
-    for fn in os.listdir(s):
-      if fnmatch.fnmatch(s + fn, _parallel_config.REGEX_FILTER):
-        fns.add(fn)
-
-  for fn in fns:
-    util.exists_empty_fn(out_dir + fn)
-    print '\tCombining', fn, '...'
-    locs = [s + fn for s in out_splits]
-    subprocess.call('cat ' + ' '.join(locs) + ' > ' + out_dir + fn, 
-      shell = True)
-
+  line_total = 0
+  for name in _config.SPLITS + ['other']:
+    print '\t\t', name
+    fns = []
+    for s in range(SPLITS):
+      fns.append(out_dir + 'split' + str(s) +'/' + name + '/' + _config.d.FN)
+    util.ensure_dir_exists(out_dir + name + '/')
+    out_fn = out_dir + name + '/' + _config.d.FN
+    subprocess.call('cat ' + ' '.join(fns) + ' > ' + out_fn, 
+        shell = True)
+    nl = util.line_count(out_fn)
+    print '\t\t', nl, 'lines'
+    line_total += nl
+  print '\tTotal Lines:', line_total
   return
 
-
-def main(inp_dir, out_dir, script):
-  print '\tParallelizing', script, 'with', _parallel_config.SPLITS, 'splits'
-
-  # Make copy of the parameters used in the run
-  util.shell_cp(_config.SRC_DIR + '_parallel_config.py', out_dir)
-
-  # Make split folders
-  split_folds(inp_dir)
-  split_folds(out_dir)
-
-  # Split the input
-  print '\tSplitting by', _parallel_config.SPLIT_TYPE
-  if _parallel_config.SPLIT_TYPE == 'line':
+def split_input(inp_dir):
+  print '\tSplitting by', SPLIT_TYPE
+  if SPLIT_TYPE == 'line':
     split_by_lines(inp_dir)
     pass
-  elif _parallel_config.SPLIT_TYPE == 'file':
+  elif SPLIT_TYPE == 'file':
     split_by_files(inp_dir)
   else:
     print 'ERROR: Invalid split type'
-    return
+  return
+
+def main(inp_dir, out_dir, script, run = True):
+  print '\tParallelizing', script, 'with', SPLITS, 'splits'
+  if not run:
+    print '...Skipping'
+    return out_dir
+
+  RUN = False
+  RUN = True
+
+  # Make split folders
+  if RUN:
+    split_folds(inp_dir)
+    split_folds(out_dir)
+  else:
+    print 'Skipping folder creation'
+
+  
+  # Split the input
+  if RUN:
+    split_input(inp_dir)
+  else:
+    print 'Skipping input splitting'
+
 
   # Parallelize on split input
-  start_threads(inp_dir, out_dir, script)
+  if RUN:
+    start_threads(inp_dir, out_dir, script)
+  else:
+    print 'Skipping parallel processing'
 
-  # Combine split output into overall results
-  combine_outputs(out_dir)
 
+  # # Combine split output into overall results
+  if RUN:
+    combine_outputs(out_dir)
+  else:
+    print 'Skipping combining output'
+
+  print 'Expected lines:', util.line_count(inp_dir + _config.d.FN)
   print 'Done'
   return out_dir
 
 
 if __name__ == '__main__':
   if len(sys.argv) != 4:
-    mod = importlib.import_module(_parallel_config.P_SCRIPT)
+    mod = importlib.import_module(P_SCRIPT)
     inp_dir = getattr(mod, 'DEFAULT_INP_DIR')
     out_dir = _config.OUT_PLACE + getattr(mod, 'NAME') + '/'
-    script = _parallel_config.P_SCRIPT
+    script = P_SCRIPT
   else:
     inp_dir = sys.argv[1]
     out_dir = sys.argv[2]

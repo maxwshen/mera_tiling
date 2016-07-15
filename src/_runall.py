@@ -5,24 +5,38 @@ import _config, _clean
 from mylib import util
 
 # Import all your steps
-import a_step, b_step
+import a_demultiplex, a_parallelize, a2_condense, b_countgrna, c_bedgraph
 
 ##############################################################
 ##############################################################
-util.cp(_config.SRC_DIR + '_config.py', _config.RESULTS_PLACE)
+util.shell_cp(_config.SRC_DIR + '_config.py', _config.RESULTS_PLACE)
 
 start = datetime.datetime.now()
 print start
 ##############################################################
 ##############################################################
 
-a_res_dir = a_step.main(_config.DATA_DIR + '/2016-06-06/', 
-  _config.OUT_PLACE, 
-  run = True)
+runbool = False
+runbool = True
 
-b_res_dir = b_step.main(a_res_dir, 
-  _config.OUT_PLACE,
-  run = True)
+a_res_dir = a_parallelize.main(_config.DATA_DIR + _config.DATA_FOLD, 
+  _config.OUT_PLACE + 'a_demultiplex/', 'a_demultiplex', 
+  run = runbool)
+
+
+a2_res_dir = a2_condense.main(a_res_dir, 
+  _config.OUT_PLACE + 'a2_condense/',
+  run = runbool)
+
+
+b_res_dir = b_countgrna.main(a2_res_dir, 
+  _config.OUT_PLACE + 'b_countgrna/',
+  run = runbool)
+
+
+c_res_dir = c_bedgraph.main(b_res_dir, 
+  _config.OUT_PLACE + 'c_bedgraph/',
+  run = runbool)
 
 
 ##############################################################

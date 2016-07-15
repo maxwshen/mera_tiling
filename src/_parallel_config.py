@@ -1,7 +1,7 @@
 import _config
 
 # Which script are we parallelizing?
-P_SCRIPT = 'scriptname'
+P_SCRIPT = 'a_demultiplex'
 
 SPLITS = 8
 
@@ -12,11 +12,11 @@ SPLITS = 8
 SPLIT_TYPE = 'line'     # 'line' or 'file'
 
 # regex to match input filenames
-REGEX_FILTER = '**'
+REGEX_FILTER = '*fastq'
 
 
 # When splitting by line, ensures that each file's number of lines
 # is divisible by this number.
 # Ensures that a multi-line "objects" aren't split across files.
 # Ex: 4 for fastq, 2 for fasta, 1 if unneeded
-LINES_DIVISOR = 2
+LINES_DIVISOR = 4
