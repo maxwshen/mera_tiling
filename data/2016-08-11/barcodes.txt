@@ -1,0 +1,12 @@
+sdhdbulka ACTAG
+sdhdbulkb TAGAGT
+sdhdnega ATATTGC
+sdhdnegb GATCATCG
+sdhdmeda CGATCGAAC
+sdhdmedb TCGATCACTT
+brca2bulka ATCGATGACGT
+brca2bulkb GTGAC
+brca2nega TGAACG
+brca2negb ATTACAG
+brca2meda GATTTGCA
+brca2medb CGATTGTAG

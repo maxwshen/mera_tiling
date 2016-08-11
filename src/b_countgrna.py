@@ -37,6 +37,7 @@ def find_grna(name, grnas, seq, df, ct):
   num_found = 0
   
   if _config.REPRODUCE:
+    print '\tWarning: Settings are for Nisha reproduction - only exact matches to primer are allowed, undercounting by 1.5-2%'
     # Nisha only considers one starting point
     starts = [21]
   else:
@@ -58,7 +59,6 @@ def find_grna(name, grnas, seq, df, ct):
   if num_found > 0:
     return True
   return False
-
 
 def count_grna(inp_dir, out_dir, gene):
   grnas = get_grnas(gene)
@@ -121,3 +121,56 @@ if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2])
   else:
     main(DEFAULT_INP_DIR, _config.OUT_PLACE + NAME + '/')
+
+
+###############################################
+################ MISCELLANEOUS ################
+###############################################
+
+
+
+def find_grna_hamming(name, grnas, seq, df, ct):
+  # Exploring the question: Why only 5% of reads match gRNAs?
+  # ANS: 5% ~ HDR rate
+  s = seq[21 : 21 + 21]
+  hammings = []
+  grnas_list = list(grnas)
+  for g in grnas_list:
+    if len(g) == 21:
+      hammings.append(sum([1 for i in range(len(s)) if s[i] != g[i]]))
+    else:
+      hammings.append(100)
+
+  # print min(hammings), ' ',
+  if min(hammings) > 6:
+    print seq[21: 21 + 21], '\n', grnas_list[hammings.index(min(hammings))], min(hammings)
+  if min(hammings) <= 1:
+    return True
+  return False
+
+def align_grna(seq, grnas):
+  # Exploring the question: Why only 5% of reads match gRNAs?
+  # ANS: 5% ~ HDR rate
+  def score_alignment(ans):
+    w = ans.split()
+    score = sum([1 for i in range(len(w[0])) if w[0][i] != w[1][i]])
+    return score
+
+  sa_tool = '/cluster/mshen/tools/seq-align/bin/needleman_wunsch'
+  sa_options = '--match 10 --mismatch -8 --gapopen -20 --gapextend -1'
+
+  aligns = []
+  scores = []
+  timer = util.Timer(total = len(grnas), print_interval = 20)
+  for g in grnas:
+    ans = subprocess.check_output(' '.join([sa_tool, 
+          sa_options, 
+          seq[21:21+21], 
+          g]),
+          shell = True)
+    aligns.append(ans)
+    scores.append(score_alignment(ans))
+    timer.update()
+
+  print min(scores), '\n', aligns[scores.index(min(scores))]
+  return

@@ -23,7 +23,8 @@ CLEAN = False       # Values = 'ask', True, False
 # DATA_FOLD = '2016-06-30-rep1/'
 # DATA_FOLD = '2016-06-30-rep1-repr/'
 REPRODUCE = False
-DATA_FOLD = '2016-07-06/'
+# DATA_FOLD = '2016-07-06/'
+DATA_FOLD = '2016-08-11/'
 
 sys.path.insert(0, DATA_DIR + DATA_FOLD)
 import _dataconfig as d
@@ -37,6 +38,7 @@ RESULTS_PLACE += DATA_FOLD
 
 
 BARCODE_MM = 0
+QUALITY_CUTOFF = 20
 
 # Read in barcodes. 1-to-1 mapping between 2 columns
 BARCODES = []
@@ -56,7 +58,10 @@ BARCODES, SPLITS = sorted(BARCODES), sorted(SPLITS)
 
 GRNA_COUNT_THRESHOLD = 5
 
-CHROMS = {'myh9': 'chr17', 'msh2': 'chr17', 'brca2': 'chr5', 'hoxa1': 'chr6'}
+CHROMS = {'myh9': 'chr17', 'msh2': 'chr17', 'brca2': 'chr5', 'hoxa1': 'chr6', 'mouseORF': 'chr5', 'sdhd': 'chr9'}
 
 BEDGRAPH_COLORS = {'bulk': '0,0,0', 'med': '0,255,0', 'neg': '255,0,0'}
 BEDGRAPH_VISIBILITY = {'bulk': 'dense', 'med': 'full', 'neg': 'full'}
+
+POS_CONTROLS = ['eGFP_control', 'eGFP_offtarget', 'control_']
+NEG_CONTROLS = ['Neg_control']

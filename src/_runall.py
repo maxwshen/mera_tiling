@@ -17,7 +17,6 @@ print start
 ##############################################################
 
 runbool = False
-runbool = True
 
 a_res_dir = a_parallelize.main(_config.DATA_DIR + _config.DATA_FOLD, 
   _config.OUT_PLACE + 'a_demultiplex/', 'a_demultiplex', 
@@ -28,6 +27,7 @@ a2_res_dir = a2_condense.main(a_res_dir,
   _config.OUT_PLACE + 'a2_condense/',
   run = runbool)
 
+runbool = True
 
 b_res_dir = b_countgrna.main(a2_res_dir, 
   _config.OUT_PLACE + 'b_countgrna/',
