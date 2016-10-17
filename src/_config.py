@@ -24,7 +24,9 @@ CLEAN = False       # Values = 'ask', True, False
 # DATA_FOLD = '2016-06-30-rep1-repr/'
 REPRODUCE = False
 # DATA_FOLD = '2016-07-06/'
-DATA_FOLD = '2016-08-11/'
+# DATA_FOLD = '2016-08-11/'
+# DATA_FOLD = '2016-08-26/'
+DATA_FOLD = '2016-10-17/'
 
 sys.path.insert(0, DATA_DIR + DATA_FOLD)
 import _dataconfig as d

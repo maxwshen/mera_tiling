@@ -41,7 +41,7 @@ def find_grna(name, grnas, seq, df, ct):
     # Nisha only considers one starting point
     starts = [21]
   else:
-    starts = [21, 20, 22]
+    starts = range(_config.d.START - _config.d.BP_RELAX, _config.d.START + _config.d.BP_RELAX + 1)
   lens = [21, 20, 19]
   seqs = []
   added_once = False
@@ -50,11 +50,12 @@ def find_grna(name, grnas, seq, df, ct):
       s = seq[st : st + l]
       if s in grnas:
         if not added_once:
+          print name, s, ct
           df[name][s] += ct
           added_once = True
         num_found += 1
   if num_found > 1:
-    print seq[5:], 'matched', num_found, 'gRNAs'
+    print seq, 'matched', num_found, 'gRNAs'
 
   if num_found > 0:
     return True
@@ -84,6 +85,7 @@ def count_grna(inp_dir, out_dir, gene):
         ct = int(rx.description.strip())
         if find_grna(name, grnas, str(rx.seq), df, ct):
           num_reads_matched += 1
+
         timer.update()
       except StopIteration:
         break

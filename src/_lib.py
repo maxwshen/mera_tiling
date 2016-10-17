@@ -36,7 +36,7 @@ def find_control(st):
   for s in _config.POS_CONTROLS:
     if s in st:
       return 'pos'
-  for s in _config.NEG_CONTROLS::
+  for s in _config.NEG_CONTROLS:
     if s in st:
       return 'neg'
   return 'none'

@@ -16,6 +16,7 @@ NAME = util.get_fn(__file__)
 
 def match(seq):
   keys = _config.BARCODES
+  dists = []
   for k in keys:
     s = seq[:len(k)]
     dists.append(sum([1 for i in range(len(k)) if s[i] != k[i]]))
@@ -41,9 +42,9 @@ def demultiplex(inp_fn, out_dir):
       rx = r.next()
       tag = match(str(rx.seq))
       if tag != 'other':
-        bc_len = _config.BARCODE_FROM_SPLITS[tag]
+        bc_len = len(_config.BARCODE_FROM_SPLITS[tag])
       else:
-        bc_len = 5
+        bc_len = 0
       
       with open(out_dir + tag + '/' +  _config.d.FN, 'a') as f:
         f.write('@' + rx.description + '\n' + str(rx.seq[bc_len:]) + '\n+\n' + compbio.SeqIO_fastq_qual_string(rx)[bc_len:] + '\n')
@@ -51,6 +52,11 @@ def demultiplex(inp_fn, out_dir):
     except StopIteration:
       break
   
+  for split in _config.SPLITS + ['other']:
+    num_found = util.line_count(out_dir + split + '/' + _config.d.FN) / 4
+    pct = float(num_found) / lc
+    print split, '\t', num_found, '\t', str(pct * 100) + '%'
+
   return
 
 
