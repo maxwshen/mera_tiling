@@ -50,7 +50,7 @@ def find_grna(name, grnas, seq, df, ct):
       s = seq[st : st + l]
       if s in grnas:
         if not added_once:
-          print name, s, ct
+          # print name, s, ct
           df[name][s] += ct
           added_once = True
         num_found += 1

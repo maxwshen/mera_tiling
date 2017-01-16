@@ -1,0 +1,9 @@
+sox2bulk CGATAACCG
+sox2neg TCGATCTCTG
+sox2blast ATCGATGGTAA
+p53bulk AAGCT
+p53neg TTCGTC
+p53blast ATCCAAT
+msh2bulk GATGCGTA
+msh2neg CGATTGAGC
+msh2blast TCGATGTCTG

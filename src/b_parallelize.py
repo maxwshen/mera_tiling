@@ -12,11 +12,11 @@ from mylib import util
 
 NAME = util.get_fn(__file__)
 
-P_SCRIPT = 'a2_condense'
+P_SCRIPT = 'b_countgrna'
 SPLITS = 16
 SPLIT_TYPE = 'line'
 REGEX_FILTER = '*SHE*'
-LINES_DIVISOR = 4
+LINES_DIVISOR = 2
 
 def split_folds(fold):
   for i in range(SPLITS):
