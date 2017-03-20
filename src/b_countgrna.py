@@ -55,7 +55,8 @@ def find_grna(name, grnas, seq, df, ct):
           added_once = True
         num_found += 1
   if num_found > 1:
-    print seq, 'matched', num_found, 'gRNAs'
+    # print seq, 'matched', num_found, 'gRNAs'
+    pass
 
   if num_found > 0:
     return True
@@ -66,33 +67,46 @@ def count_grna(inp_dir, out_dir, gene):
   if len(set(grnas)) != len(grnas):
     print '\tERROR: Duplicate gRNAs in file'
 
-  exps = [nm.replace(gene, '') for nm in _config.SPLITS if gene in nm]
+  exps = _config.d.GROUPS[_config.d.GENES.index(gene)]
   df = pd.DataFrame(index = grnas, columns = exps, dtype = int)
   df[:][:] = 0
 
   grnas = set(grnas)
   for name in exps:
     print '\t\t', name
-    reads_fn = inp_dir + gene + name + '/' + _config.d.FN
+    reads_fn = inp_dir + name + '/' + _config.d.FN
 
     num_reads_matched = 0
+    num_unique_matched = 0
     r = SeqIO.parse(reads_fn, 'fasta')
     nl = util.line_count(reads_fn) / 2
+    tot = 0
     timer = util.Timer(total = nl, print_interval = 5)
+    unmatched = []
     while True:
       try:
         rx = r.next()
         ct = int(rx.description.strip())
+        tot += ct
         if find_grna(name, grnas, str(rx.seq), df, ct):
-          num_reads_matched += 1
+          num_reads_matched += ct
+          num_unique_matched += 1
+        else:
+          unmatched.append([ct, str(rx.seq)])
 
         timer.update()
       except StopIteration:
         break
 
-    pct_reads_matched = float(num_reads_matched) / nl
-    print num_reads_matched, '/', nl
-    print pct_reads_matched * 100, '%', ' unique reads matched'
+    pct_reads_matched = float(num_reads_matched) / tot
+    pct_unique_matched = float(num_unique_matched) / nl
+    print num_reads_matched, '/', tot
+    print pct_reads_matched * 100, '%', ' reads matched'
+    print pct_unique_matched * 100, '%', ' uniques matched'
+
+    um = sorted(unmatched, reverse = True)
+    dfum = pd.DataFrame(um[:200])
+    dfum.to_csv(out_dir + name + '_unmatched.csv')
 
   out_fn = out_dir + _config.d.FN
   with open(out_fn, 'w') as f:

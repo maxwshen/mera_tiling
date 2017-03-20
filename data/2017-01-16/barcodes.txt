@@ -7,3 +7,8 @@ p53blast ATCCAAT
 msh2bulk GATGCGTA
 msh2neg CGATTGAGC
 msh2blast TCGATGTCTG
+qingt11 ATCGATTTCCT
+qingt12 GCTGT
+qingt21 TTAGTG
+qingt22 ATAGTTA
+mesc GATATCCG

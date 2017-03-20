@@ -35,7 +35,7 @@ def write_bulk(counts, out_place, gene):
   with open(out_fn, 'w') as f:
     f.write(_lib.bg_header('bulk', gene) + '\n')
     for r in regions:
-      f.write(_config.CHROMS[gene] + '\t' + '\t'.join([str(s) for s in r]) + '\n')
+      f.write(_config.CHROMS[gene.lower()] + '\t' + '\t'.join([str(s) for s in r]) + '\n')
   return
 
 def write_enrichment(counts, out_place, gene, exp, bulk_nm):
@@ -45,7 +45,7 @@ def write_enrichment(counts, out_place, gene, exp, bulk_nm):
   xp = exp.replace(gene, '')
   bnm = bulk_nm.replace(gene, '')
 
-  # import pdb; pdb.set_trace()
+  # import code; code.interact(local=dict(globals(), **locals()))
 
   timer = util.Timer(total = len(counts))
   for i in range(len(counts)):
@@ -54,6 +54,8 @@ def write_enrichment(counts, out_place, gene, exp, bulk_nm):
       regions.append( [counts['start'][i], counts['end'][i], enrich] )
     timer.update()
 
+  # import code; code.interact(local=dict(globals(), **locals()))
+
   regions = combine_avg_regions(regions)
   out_fn = out_place + gene + '_' + xp + '.bg'
   with open(out_fn, 'w') as f:
@@ -61,7 +63,7 @@ def write_enrichment(counts, out_place, gene, exp, bulk_nm):
     for r in regions:
       if not _lib.is_control(r[0]):
         # if it is, it's a control, so don't write
-        f.write(_config.CHROMS[gene] + '\t' + '\t'.join([str(s) for s in r]) + '\n')
+        f.write(_config.CHROMS[gene.lower()] + '\t' + '\t'.join([str(s) for s in r]) + '\n')
   return
 
 def combine_regions(regions):
@@ -110,6 +112,8 @@ def combine_avg_regions(regions):
     print '\tNo regions found'
     return []
 
+
+
   keys = range(int(regions[0][0]), int(regions[-1][1]) + 2)
   
   # b[i][0] stores enrichment total (at position i)
@@ -155,10 +159,10 @@ def combine_avg_regions(regions):
 def bedgraph(inp_fn, out_place, gene):
   counts = pd.read_csv(inp_fn)
 
-  for grp in _config.d.GROUPS:
+  for grp in _config.d.F_BEDGRAPH_GROUPS:
     if gene in grp[0]:
-      bulk_nm, med_nm, neg_nm = grp[0], grp[1], grp[2]
-      write_enrichment(counts, out_place, gene, med_nm, bulk_nm)
+      bulk_nm, pos_nm, neg_nm = grp[0], grp[1], grp[2]
+      write_enrichment(counts, out_place, gene, pos_nm, bulk_nm)
       write_enrichment(counts, out_place, gene, neg_nm, bulk_nm)
       write_bulk(counts, out_place, gene)
   return

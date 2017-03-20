@@ -27,7 +27,9 @@ REPRODUCE = False
 # DATA_FOLD = '2016-08-11/'
 # DATA_FOLD = '2016-08-26/'
 # DATA_FOLD = '2016-10-17/'
-DATA_FOLD = '2017-01-16/'
+# DATA_FOLD = '2017-01-16/'
+DATA_FOLD = '2017-03-06/'
+
 
 sys.path.insert(0, DATA_DIR + DATA_FOLD)
 import _dataconfig as d
@@ -64,7 +66,7 @@ BARCODES, SPLITS = sorted(BARCODES), sorted(SPLITS)
 
 GRNA_COUNT_THRESHOLD = 5
 
-CHROMS = {'myh9': 'chr17', 'msh2': 'chr17', 'brca2': 'chr5', 'hoxa1': 'chr6', 'mouseORF': 'chr5', 'sdhd': 'chr9', 'pou5f1': 'chr17', 'tdgf1': 'chr9', 'p53': 'chr17', 'sox2': 'chr3'}
+CHROMS = {'myh9': 'chr17', 'msh2': 'chr17', 'brca2': 'chr5', 'hoxa1': 'chr6', 'mouseORF': 'chr5', 'sdhd': 'chr9', 'pou5f1': 'chr17', 'tdgf1': 'chr9', 'p53': 'chr17', 'sox2': 'chr3', 'cdx2': 'chr5'}
 
 BEDGRAPH_COLORS = {'bulk': '0,0,0', 'med': '0,255,0', 'neg': '255,0,0'}
 BEDGRAPH_VISIBILITY = {'bulk': 'dense', 'med': 'full', 'neg': 'full'}

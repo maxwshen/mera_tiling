@@ -31,7 +31,8 @@ def bg_header(exp, gene):
   if 'med' in exp:
     ans = 'track type=bedGraph name="' + gene +  '_gfp' +  exp + '" description="' + gene + '_gfp' + exp + '_ratio" visibility=' + _config.BEDGRAPH_VISIBILITY['med'] + ' color=' + _config.BEDGRAPH_COLORS['med']
     ok = True
-  if 'neg' in exp:
+  else:
+    # if 'neg' in exp:
     ans = 'track type=bedGraph name="' + gene +  '_gfp' +  exp + '" description="' + gene + '_gfp' + exp + '_ratio" visibility=' + _config.BEDGRAPH_VISIBILITY['neg'] + ' color=' + _config.BEDGRAPH_COLORS['neg']
     ok = True
   if not ok:
